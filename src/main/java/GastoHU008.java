@@ -6,6 +6,7 @@ import com.ebv14.backend.model.Usuario;
 import com.ebv14.backend.repository.CategoriaRepository;
 import com.ebv14.backend.repository.TransaccionRepository;
 import com.ebv14.backend.repository.UsuarioRepository;
+import com.ebv14.backend.service.AlertaPresupuestoService;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.DecimalMin;
 import jakarta.validation.constraints.NotBlank;
@@ -115,13 +116,16 @@ class GastoService {
     private final TransaccionRepository transaccionRepository;
     private final UsuarioRepository usuarioRepository;
     private final CategoriaRepository categoriaRepository;
+    private final AlertaPresupuestoService alertaPresupuestoService;
 
     public GastoService(TransaccionRepository transaccionRepository,
                         UsuarioRepository usuarioRepository,
-                        CategoriaRepository categoriaRepository) {
+                        CategoriaRepository categoriaRepository,
+                        AlertaPresupuestoService alertaPresupuestoService) {
         this.transaccionRepository = transaccionRepository;
         this.usuarioRepository = usuarioRepository;
         this.categoriaRepository = categoriaRepository;
+        this.alertaPresupuestoService = alertaPresupuestoService;
     }
 
 
@@ -148,7 +152,10 @@ class GastoService {
             // La fecha se asigna automáticamente en @PrePersist
             Transaccion gastoGuardado = transaccionRepository.save(gasto);
 
-            // PASO 5: Retornar respuesta
+            // PASO 5: ✨ Evaluar presupuesto y generar alerta si es necesario
+            alertaPresupuestoService.evaluarYGenerarAlerta(usuario.getId());
+
+            // PASO 6: Retornar respuesta
             return new GastoResponse(gastoGuardado);
 
         } catch (RuntimeException e) {

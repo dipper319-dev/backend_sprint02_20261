@@ -32,6 +32,10 @@ public class Usuario {
     @Builder.Default
     private BigDecimal balanceInicial = BigDecimal.ZERO;
 
+    @Column(name = "presupuesto_mensual", nullable = false)
+    @Builder.Default
+    private BigDecimal presupuestoMensual = BigDecimal.ZERO;
+
     @Column(name = "codigo_recuperacion")
     private String codigoRecuperacion;
 
@@ -50,6 +54,9 @@ public class Usuario {
         this.fechaRegistro = LocalDateTime.now();
         if (this.balanceInicial == null) {
             this.balanceInicial = BigDecimal.ZERO;
+        }
+        if (this.presupuestoMensual == null) {
+            this.presupuestoMensual = BigDecimal.ZERO;
         }
     }
 }
